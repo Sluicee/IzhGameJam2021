@@ -7,11 +7,7 @@ public class characterController : MonoBehaviour
     //movement
     [SerializeField] private float moveSpeed;
     [SerializeField] private CharacterController controller;
-    private bool touchStart = false; //circle is moving?
-    private Vector2 pointA; //touch position
-    private Vector2 pointB; //touch direction position
-    [SerializeField] private Transform circle;
-    [SerializeField] private Transform outerCircle;
+    [SerializeField] private FixedJoystick joystick;
 
     //bounds
     [SerializeField] private Camera mainCamera;
@@ -29,7 +25,10 @@ public class characterController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
+        //Vector3 move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
+        //controller.Move(move * Time.deltaTime * moveSpeed);
+
+        Vector3 move = Vector3.up * joystick.Vertical + Vector3.right * joystick.Horizontal; 
         controller.Move(move * Time.deltaTime * moveSpeed);
 
 
