@@ -25,13 +25,15 @@ public class characterController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //пк управление
         //Vector3 move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
         //controller.Move(move * Time.deltaTime * moveSpeed);
 
+        //мобильное управление
         Vector3 move = Vector3.up * joystick.Vertical + Vector3.right * joystick.Horizontal; 
         controller.Move(move * Time.deltaTime * moveSpeed);
 
-
+        //ограничение движения по краям экрана
         Vector3 viewPos = transform.position;
 
         viewPos.x = Mathf.Clamp(viewPos.x, screenBounds.x * -1 + objectWidth, screenBounds.x - objectWidth);
