@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
         }
         if (hp == 0)
         {
-            //Death();
+            Death();
             Debug.Log("Death");
         }
     }

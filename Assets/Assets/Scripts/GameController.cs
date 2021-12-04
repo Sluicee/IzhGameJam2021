@@ -11,26 +11,36 @@ public class GameController : MonoBehaviour
     [SerializeField] private Player player;
 
     //HP
+    [Header("Health Points")]
     [SerializeField] private GameObject HP;
     [SerializeField] private RectTransform HPSpawnPoint;
     [SerializeField] private float HPGap;
     private List<GameObject> HPs = new List<GameObject>();
 
     //score
-    [SerializeField] private TextMeshPro highScore;
-    [SerializeField] private TextMeshPro scoreText;
-    private int score;
+    [Header("Score")]
+    [SerializeField] private TMP_Text highScoreText;
+    [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private int scoreMultiply;
+    private float score;
+    private float highScore;
 
     private void Start()
     {
         Player.HPChange += HPChange;
+        Player.Death += Death;
         drawHPs();
+    }
+
+    private void OnDestroy()
+    {
+        Player.HPChange -= HPChange;
     }
 
     private void Update()
     {
-        score += (int) Time.deltaTime;
-        scoreText.SetText("Score: " + score.ToString());
+        score += Time.deltaTime * scoreMultiply;
+        scoreText.SetText("Score: " + Mathf.Round(score).ToString());
     }
 
     private void HPChange()
@@ -51,5 +61,10 @@ public class GameController : MonoBehaviour
             hp.transform.SetParent(HPSpawnPoint.transform, false);
             HPs.Add(hp);
         }
+    }
+
+    private void Death()
+    {
+
     }
 }
