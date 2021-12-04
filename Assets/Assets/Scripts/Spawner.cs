@@ -26,7 +26,7 @@ public class Spawner : MonoBehaviour
         if (timeLeft <= 0)
         {
             GameObject obstacle;
-            obstacle = Instantiate(obstacles[Random.Range(0, 1)], new Vector2(transform.position.x, Random.Range(top, bottom)), Quaternion.identity);
+            obstacle = Instantiate(obstacles[Random.Range(0, obstacles.Count)], new Vector2(transform.position.x, Random.Range(top, bottom)), Quaternion.identity);
             timeLeft = countDown;
         }
     }

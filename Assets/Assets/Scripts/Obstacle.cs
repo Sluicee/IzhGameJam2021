@@ -17,4 +17,13 @@ public class Obstacle : MonoBehaviour
     {
         rb.velocity = new Vector2(speed * -1, 0); //движение препятсвия
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Bullet")
+        {
+            Destroy(gameObject);
+            Destroy(collision.gameObject);
+        }
+    }
 }
