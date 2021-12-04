@@ -6,8 +6,8 @@ public class characterController : MonoBehaviour
 {
     //movement
     [SerializeField] private float moveSpeed;
-    [SerializeField] private CharacterController controller;
     [SerializeField] private FixedJoystick joystick;
+    private Rigidbody2D rb;
 
     //bounds
     [SerializeField] private Camera mainCamera;
@@ -17,7 +17,7 @@ public class characterController : MonoBehaviour
 
     void Start()
     {
-        controller = GetComponent<CharacterController>();
+        rb = GetComponent<Rigidbody2D>();
         screenBounds = mainCamera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, mainCamera.transform.position.z));
         objectWidth = transform.GetComponent<SpriteRenderer>().bounds.extents.x;
         objectHeight = transform.GetComponent<SpriteRenderer>().bounds.extents.y;
@@ -30,8 +30,8 @@ public class characterController : MonoBehaviour
         //controller.Move(move * Time.deltaTime * moveSpeed);
 
         //мобильное управление
-        Vector3 move = Vector3.up * joystick.Vertical + Vector3.right * joystick.Horizontal; 
-        controller.Move(move * Time.deltaTime * moveSpeed);
+        Vector3 move = Vector3.up * joystick.Vertical + Vector3.right * joystick.Horizontal;
+        rb.velocity = move * moveSpeed;
 
         //ограничение движения по краям экрана
         Vector3 viewPos = transform.position;
