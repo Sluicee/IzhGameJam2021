@@ -15,6 +15,9 @@ public class Player : MonoBehaviour
     public delegate void HPDelegate();
     public static event HPDelegate HPChange;
 
+    public delegate void ManaDelegate();
+    public static event HPDelegate ManaChange;
+
     private void Start()
     {
         
@@ -44,6 +47,16 @@ public class Player : MonoBehaviour
             case "BuffShield":
                 deff = true;
                 shield.SetActive(true);
+                Destroy(collision.gameObject);
+                break;
+            case "BuffMana":
+                mana++;
+                ManaChange?.Invoke();
+                Destroy(collision.gameObject);
+                break;
+            case "BuffHP":
+                hp++;
+                HPChange?.Invoke();
                 Destroy(collision.gameObject);
                 break;
         }

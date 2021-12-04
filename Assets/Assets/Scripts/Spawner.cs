@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    private float objectHeight; //размеры спавнера
     private float bottom; //нижн€€ точка спавнера
     private float top; //верхн€€ точка спавнера
 
@@ -16,16 +15,31 @@ public class Spawner : MonoBehaviour
     [SerializeField] private List<GameObject> obstacles = new List<GameObject>(); //список преп€тствий
     
     [Header("Shield")]
-    [SerializeField] private float shieldCD; // кд на спавн shield
+    [SerializeField] private float shieldMinCD; // кд на спавн shield
+    [SerializeField] private float shieldMaxCD; // кд на спавн shield
     [SerializeField] private float shieldLifeTime;
     [SerializeField] private GameObject shieldPrefab; //shield
 
+    [Header("HP")]
+    [SerializeField] private float HPMinCD; // кд на спавн hp
+    [SerializeField] private float HPMaxCD; // кд на спавн hp
+    [SerializeField] private float HPLifeTime;
+    [SerializeField] private GameObject HPPrefab; //hp
+
+    [Header("Mana")]
+    [SerializeField] private float manaMinCD; // кд на спавн mana
+    [SerializeField] private float manaMaxCD; // кд на спавн mana
+    [SerializeField] private float manaLifeTime;
+    [SerializeField] private GameObject manaPrefab; //mana
+
     void Start()
     {
-        objectHeight = transform.GetComponent<SpriteRenderer>().bounds.size.y;
-        top = objectHeight / 2;
-        bottom = -objectHeight / 2;
+        top = transform.GetComponent<SpriteRenderer>().bounds.max.y;
+        bottom = transform.GetComponent<SpriteRenderer>().bounds.min.y;
         obstacleTimeLeft = obstacleCD;
+        shieldTimeLeft = Random.Range(shieldMinCD, shieldMaxCD);
+        HPLifeTime = Random.Range(HPMinCD, HPMaxCD);
+        manaLifeTime = Random.Range(manaMinCD, manaMaxCD);
         //подпись на событие изменени€ уровн€
     }
 
@@ -33,6 +47,8 @@ public class Spawner : MonoBehaviour
     {
         obstacleTimeLeft -= Time.deltaTime;
         shieldTimeLeft -= Time.deltaTime;
+        manaLifeTime -= Time.deltaTime;
+        HPLifeTime -= Time.deltaTime;
         if (obstacleTimeLeft <= 0)
         {
             GameObject obstacle;
@@ -45,8 +61,24 @@ public class Spawner : MonoBehaviour
         {
             GameObject shield;
             shield = Instantiate(shieldPrefab, new Vector2(transform.position.x, Random.Range(top, bottom)), Quaternion.identity);
-            shieldTimeLeft = shieldCD;
+            shieldTimeLeft = Random.Range(shieldMinCD, shieldMaxCD);
             Destroy(shield, shieldLifeTime);
+        }
+
+        if(manaLifeTime <= 0)
+        {
+            GameObject mana;
+            mana = Instantiate(manaPrefab, new Vector2(transform.position.x, Random.Range(top, bottom)), Quaternion.identity);
+            manaLifeTime = Random.Range(manaMinCD, manaMaxCD);
+            Destroy(mana, manaLifeTime);
+        }
+
+        if(HPLifeTime <= 0)
+        {
+            GameObject hp;
+            hp = Instantiate(HPPrefab, new Vector2(transform.position.x, Random.Range(top, bottom)), Quaternion.identity);
+            HPLifeTime = Random.Range(HPMinCD, HPMaxCD);
+            Destroy(hp,HPLifeTime);
         }
     }
 }
