@@ -17,6 +17,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private float HPGap;
     private List<GameObject> HPs = new List<GameObject>();
 
+
     //score
     [Header("Score")]
     [SerializeField] private TMP_Text highScoreText;
@@ -65,6 +66,10 @@ public class GameController : MonoBehaviour
 
     private void Death()
     {
-
+        if (score > highScore) { 
+            highScore = Mathf.Round(score);
+            highScoreText.SetText("High Score: " + highScore.ToString());
+        }
+        PlayerPrefs.SetFloat("HighScore", highScore);
     }
 }

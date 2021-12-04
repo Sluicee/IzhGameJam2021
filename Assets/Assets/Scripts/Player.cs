@@ -6,6 +6,8 @@ public class Player : MonoBehaviour
 {
     public int mana;
     public int hp;
+    public bool deff = false;
+    [SerializeField] private GameObject shield;
 
     public delegate void DeathDelegate();
     public static event DeathDelegate Death;
@@ -22,15 +24,29 @@ public class Player : MonoBehaviour
         switch (collision.gameObject.tag)
         {
             case "Obstacle":
-                hp--;
-                HPChange();
+                if (deff)
+                {
+                    shield.SetActive(false);
+                    deff = false;
+                }
+                else
+                {
+                    hp--;
+                    HPChange?.Invoke();
+                }
+                Destroy(collision.gameObject);
+                if (hp == 0)
+                {
+                    Death?.Invoke();
+                    Debug.Log("Death");
+                }
+                break;
+            case "BuffShield":
+                deff = true;
+                shield.SetActive(true);
                 Destroy(collision.gameObject);
                 break;
         }
-        if (hp == 0)
-        {
-            Death();
-            Debug.Log("Death");
-        }
+        
     }
 }
