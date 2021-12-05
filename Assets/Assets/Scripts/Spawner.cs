@@ -45,16 +45,16 @@ public class Spawner : MonoBehaviour
         {
             GameObject obstacle;
             obstacle = Instantiate(obstacles[Random.Range(0, obstacles.Count)], new Vector2(transform.position.x, Random.Range(top, bottom)), Quaternion.identity);
-            obstacleTimeLeft = Random.Range(obstacleMinCD, obstacleMaxCD);
-            Destroy(obstacle, obstacleLifeTime);
+            obstacleTimeLeft = Random.Range(obstacleMinCD / gameController.level, obstacleMaxCD / gameController.level);
+            Destroy(obstacle, obstacleLifeTime / gameController.level);
         }
 
         if (buffTimeLeft <= 0)
         {
             GameObject buff;
             buff = Instantiate(buffPrefabs[Random.Range(0, buffPrefabs.Count)], new Vector2(transform.position.x, Random.Range(top, bottom)), Quaternion.identity);
-            buffTimeLeft = Random.Range(buffMinCD, buffMaxCD);
-            Destroy(buff, buffLifeTime);
+            buffTimeLeft = Random.Range(buffMinCD / gameController.level, buffMaxCD / gameController.level);
+            Destroy(buff, buffLifeTime / gameController.level);
         }
     }
 }

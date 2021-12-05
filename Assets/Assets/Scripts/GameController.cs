@@ -6,10 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-    public delegate void GameControllerDelegate();
-    public static event GameControllerDelegate levelUP;
-    [SerializeField] private int level;
-    //������� ��������� ������, �� ������� ��������� obstacle and spawner
+    public int level { get; private set; }
     
     [SerializeField] private Player player;
 
@@ -17,8 +14,8 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject GUI;
     [SerializeField] private GameObject Menu;
     [SerializeField] private GameObject endScreen;
-    public delegate void GameStart();
-    public static event GameStart GameStarted;
+    public delegate void GameControllerDelegate();
+    public static event GameControllerDelegate GameStarted;
 
     [Header("Sounds")]
     [SerializeField] private AudioSource bgMusic;
@@ -52,6 +49,7 @@ public class GameController : MonoBehaviour
     private bool scoreBonusMuliplyActive = false;
     private float score;
     private float highScore;
+    private float levelProgress = 0;
 
     [Header("Camera")]
     [SerializeField] private Animator cameraAnimator;
@@ -59,6 +57,7 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         gameStarted = false;
+        level = 1;
         Player.HPChange += HPChange;
         Player.Death += Death;
         Player.ManaChange += ManaChange;
@@ -93,18 +92,14 @@ public class GameController : MonoBehaviour
                 }
             }
             score += Time.deltaTime * scoreMultiply * scoreBonusMuliply;
+            levelProgress += Time.deltaTime * scoreMultiply * scoreBonusMuliply;
             scoreText.SetText("Score: " + Mathf.Round(score).ToString());
-            if (score == 500 || score == 1000)
-            {
-                levelChange();
+            if (levelProgress >= 300 && level < 4)
+            { 
+                levelProgress = 0;
+                level++;
             }
         }
-    }
-
-    private void levelChange ()
-    {
-        level++;
-        levelUP?.Invoke();
     }
 
     public void ExitGame()
