@@ -34,7 +34,7 @@ public class characterController : MonoBehaviour
 
         //мобильное управление
         Vector3 move = Vector3.up * joystick.Vertical + Vector3.right * joystick.Horizontal;
-        rb.velocity = move * moveSpeed;
+        rb.velocity = move * moveSpeed * Time.deltaTime;
 
         //ограничение движения по краям экрана
         Vector3 viewPos = transform.position;

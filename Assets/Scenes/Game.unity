@@ -3946,6 +3946,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 606142067}
     - target: {fileID: 6695320416455958224, guid: 08c7dea458c563d479e05ff19d0645f4, type: 3}
+      propertyPath: moveSpeed
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 6695320416455958224, guid: 08c7dea458c563d479e05ff19d0645f4, type: 3}
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 519420031}
