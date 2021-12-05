@@ -6,7 +6,7 @@ public class characterController : MonoBehaviour
 {
     //movement
     [SerializeField] private float moveSpeed;
-    [SerializeField] private FixedJoystick joystick;
+    [SerializeField] private FloatingJoystick joystick;
     private Rigidbody2D rb;
 
     //bounds
