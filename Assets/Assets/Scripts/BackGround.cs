@@ -17,8 +17,6 @@ public class BackGround : MonoBehaviour
             transform.localScale = new Vector3(transform.localScale.x * 1.1f, transform.localScale.y * 1.1f, transform.localScale.z * 1.1f);
             if (Screen.width < renderer.bounds.size.x * 100)
             {
-                Debug.Log(Screen.width);
-                Debug.Log(renderer.bounds.size.x * 100);
                 break;
             }
         }

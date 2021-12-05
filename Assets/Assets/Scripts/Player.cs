@@ -6,17 +6,21 @@ public class Player : MonoBehaviour
 {
     public int mana;
     public int hp;
+    [SerializeField] private int maxHP;
+    [SerializeField] private int maxMana;
     public bool deff = false;
     [SerializeField] private GameObject shield;
 
-    public delegate void DeathDelegate();
-    public static event DeathDelegate Death;
+    public delegate void PlayerDelegate();
+    public static event PlayerDelegate Death;
+    public static event PlayerDelegate HPChange;
+    public static event PlayerDelegate ManaChange;
+    public static event PlayerDelegate CoinCollected;
 
-    public delegate void HPDelegate();
-    public static event HPDelegate HPChange;
-
-    public delegate void ManaDelegate();
-    public static event HPDelegate ManaChange;
+    [Header("Sounds")]
+    [SerializeField] private AudioSource punchSound;
+    [SerializeField] private AudioSource buffPickUp;
+    [SerializeField] private AudioSource shieldBreak;
 
     private void Start()
     {
@@ -31,10 +35,12 @@ public class Player : MonoBehaviour
                 {
                     shield.SetActive(false);
                     deff = false;
+                    shieldBreak.Play();
                 }
                 else
                 {
                     hp--;
+                    punchSound.Play();
                     HPChange?.Invoke();
                 }
                 Destroy(collision.gameObject);
@@ -46,17 +52,31 @@ public class Player : MonoBehaviour
                 break;
             case "BuffShield":
                 deff = true;
+                buffPickUp.Play();
                 shield.SetActive(true);
                 Destroy(collision.gameObject);
                 break;
             case "BuffMana":
-                mana++;
-                ManaChange?.Invoke();
+                if (mana < maxMana)
+                {
+                    mana++;
+                    buffPickUp.Play();
+                    ManaChange?.Invoke();
+                }
                 Destroy(collision.gameObject);
                 break;
             case "BuffHP":
-                hp++;
-                HPChange?.Invoke();
+                if (hp < maxHP)
+                {
+                    hp++;
+                    buffPickUp.Play();
+                    HPChange?.Invoke();
+                }
+                Destroy(collision.gameObject);
+                break;
+            case "BuffCoin":
+                buffPickUp.Play();
+                CoinCollected?.Invoke();
                 Destroy(collision.gameObject);
                 break;
         }

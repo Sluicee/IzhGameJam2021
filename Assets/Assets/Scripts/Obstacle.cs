@@ -6,11 +6,17 @@ public class Obstacle : MonoBehaviour
 {
     [SerializeField] private float speed; //скорость полёта препятсвия
     private Rigidbody2D rb;
+    [SerializeField] private AudioSource audioSource;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        //подпись на событие изменения уровня
+        GameController.levelUP += levelChange;
+    }
+
+    private void OnDestroy()
+    {
+        GameController.levelUP -= levelChange;
     }
 
     private void FixedUpdate()
@@ -22,8 +28,17 @@ public class Obstacle : MonoBehaviour
     {
         if (collision.tag == "Bullet")
         {
+            if (audioSource != null)
+            {
+                audioSource.Play();
+            }
             Destroy(gameObject);
             Destroy(collision.gameObject);
         }
+    }
+
+    private void levelChange()
+    {
+        speed++;
     }
 }

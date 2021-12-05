@@ -2,13 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
+    public delegate void GameControllerDelegate();
+    public static event GameControllerDelegate levelUP;
     [SerializeField] private int level;
-    //событие изменение уровня, на которое подписаны obstacle and spawner
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ obstacle and spawner
     
     [SerializeField] private Player player;
+
+    public bool gameStarted { get; private set; }
+    [SerializeField] private GameObject GUI;
+    [SerializeField] private GameObject Menu;
+    [SerializeField] private GameObject endScreen;
+    public delegate void GameStart();
+    public static event GameStart GameStarted;
+
+    [Header("Sounds")]
+    [SerializeField] private AudioSource bgMusic;
+    [SerializeField] private AudioSource loseSound;
 
     //HP
     [Header("Health Points")]
@@ -30,17 +44,27 @@ public class GameController : MonoBehaviour
     [Header("Score")]
     [SerializeField] private TMP_Text highScoreText;
     [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private TMP_Text endHighScoreText;
+    [SerializeField] private TMP_Text endScoreText;
     [SerializeField] private int scoreMultiply;
+    private float scoreMuliplyTimeLeft = 0;
+    private float scoreBonusMuliply = 1;
+    private bool scoreBonusMuliplyActive = false;
     private float score;
     private float highScore;
 
+    [Header("Camera")]
+    [SerializeField] private Animator cameraAnimator;
+
     private void Start()
     {
+        gameStarted = false;
         Player.HPChange += HPChange;
         Player.Death += Death;
         Player.ManaChange += ManaChange;
         Gun.ShootEvent += ManaChange;
-        highScore = PlayerPrefs.GetFloat("HighScore");
+        Player.CoinCollected += CoinCollected;
+        highScoreText.SetText("High Score: " + PlayerPrefs.GetFloat("HighScore", 0));
         drawHPs();
         drawManas();
     }
@@ -48,12 +72,73 @@ public class GameController : MonoBehaviour
     private void OnDestroy()
     {
         Player.HPChange -= HPChange;
+        Player.Death -= Death;
+        Player.ManaChange -= ManaChange;
+        Gun.ShootEvent -= ManaChange;
+        Player.CoinCollected -= CoinCollected;
     }
 
     private void Update()
     {
-        score += Time.deltaTime * scoreMultiply;
-        scoreText.SetText("Score: " + Mathf.Round(score).ToString());
+        if (gameStarted)
+        {
+            if (scoreBonusMuliplyActive)
+            {
+                scoreMuliplyTimeLeft -= Time.deltaTime;
+                if (scoreMuliplyTimeLeft <= 0)
+                {
+                    scoreMuliplyTimeLeft = 0;
+                    scoreBonusMuliplyActive = false;
+                    scoreBonusMuliply = 1;
+                }
+            }
+            score += Time.deltaTime * scoreMultiply * scoreBonusMuliply;
+            scoreText.SetText("Score: " + Mathf.Round(score).ToString());
+            if (score == 500 || score == 1000)
+            {
+                levelChange();
+            }
+        }
+    }
+
+    private void levelChange ()
+    {
+        level++;
+        levelUP?.Invoke();
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+
+    public void ReloadScene()
+    {
+        SceneManager.LoadScene("Game");
+    }
+
+    public void StartGame()
+    {
+        cameraAnimator.Play("CameraZoom");
+        Menu.SetActive(false);
+        StartCoroutine(StartFade(bgMusic, 2, 0.6f));
+        StartCoroutine(wait());
+        
+    }
+
+    IEnumerator wait()
+    {
+        yield return new WaitForSeconds(cameraAnimator.GetCurrentAnimatorStateInfo(0).length);
+        GameStarted?.Invoke();
+        GUI.SetActive(true);
+        gameStarted = true;
+    }
+
+    private void CoinCollected()
+    {
+        scoreBonusMuliplyActive = true;
+        scoreMuliplyTimeLeft = 10;
+        scoreBonusMuliply = 2;
     }
 
     private void HPChange()
@@ -101,10 +186,30 @@ public class GameController : MonoBehaviour
 
     private void Death()
     {
+        gameStarted = false;
+        StartCoroutine(StartFade(bgMusic, 0.5f, 0));
+        loseSound.Play();
         if (score > highScore) { 
             highScore = Mathf.Round(score);
             highScoreText.SetText("High Score: " + highScore.ToString());
         }
         PlayerPrefs.SetFloat("HighScore", highScore);
+        GUI.SetActive(false);
+        endScreen.SetActive(true);
+        endScoreText.SetText("Score: " + Mathf.Round(score).ToString());
+        endHighScoreText.SetText("High Score: " + PlayerPrefs.GetFloat("HighScore", 0));
+    }
+    public static IEnumerator StartFade(AudioSource audioSource, float duration, float targetVolume)
+    {
+        float currentTime = 0;
+        float start = audioSource.volume;
+
+        while (currentTime < duration)
+        {
+            currentTime += Time.deltaTime;
+            audioSource.volume = Mathf.Lerp(start, targetVolume, currentTime / duration);
+            yield return null;
+        }
+        yield break;
     }
 }

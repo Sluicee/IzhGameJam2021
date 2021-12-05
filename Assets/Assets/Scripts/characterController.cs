@@ -18,9 +18,12 @@ public class characterController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        screenBounds = mainCamera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, mainCamera.transform.position.z));
-        objectWidth = transform.GetComponent<SpriteRenderer>().bounds.extents.x;
-        objectHeight = transform.GetComponent<SpriteRenderer>().bounds.extents.y;
+        GameController.GameStarted += calculateBounds;
+    }
+
+    private void OnDestroy()
+    {
+        GameController.GameStarted -= calculateBounds;
     }
 
     private void FixedUpdate()
@@ -40,5 +43,12 @@ public class characterController : MonoBehaviour
         viewPos.y = Mathf.Clamp(viewPos.y, screenBounds.y * -1 + objectHeight, screenBounds.y - objectHeight);
 
         transform.position = viewPos;
+    }
+
+    private void calculateBounds()
+    {
+        screenBounds = mainCamera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, mainCamera.transform.position.z));
+        objectWidth = transform.GetComponent<SpriteRenderer>().bounds.extents.x;
+        objectHeight = transform.GetComponent<SpriteRenderer>().bounds.extents.y;
     }
 }
